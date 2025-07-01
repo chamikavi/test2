@@ -41,3 +41,82 @@ KPI anomaly detection
 Ensure the generated specification aligns precisely with the described requirements, structures, and constraints.
 
 chamindu kavindra
+
+## Development setup
+
+Install dependencies using Poetry:
+
+```bash
+poetry install
+```
+
+Create a `.env` file based on `.env.example` and adjust the `DATABASE_URL` as needed. The default configuration uses SQLite for local development.
+
+Run the API with Uvicorn:
+
+```bash
+poetry run uvicorn app.main:app --reload
+```
+
+This will start the FastAPI server at `http://localhost:8000`.
+
+## Frontend development
+
+Install Node dependencies:
+
+```bash
+cd frontend
+npm install
+```
+
+Create a `.env` file based on `.env.example` to configure the API base URL.
+
+Start the development server:
+
+```bash
+npm run dev
+```
+
+The React app will be available at `http://localhost:5173` by default.
+
+## Available API endpoints
+
+The backend exposes a small set of CRUD endpoints secured with HTTP Basic auth:
+
+```
+POST /users/                  create a new user
+GET  /outlets/                list outlets
+POST /outlets/                create outlet
+GET  /periods/                list reporting periods
+POST /periods/                create period
+GET  /kpis/                   list KPIs
+POST /kpis/                   create KPI
+GET  /updates/{outlet}/{kpi}  list KPI updates
+POST /updates/                create update
+GET  /metrics/{outlet}/{kpi}  aggregated KPI values
+GET  /feedback/{outlet}       list feedback for outlet
+POST /feedback/               create feedback entry
+GET  /files/{outlet}/{period} list file metadata
+POST /files/                  create file metadata entry
+GET  /deck/{outlet}/{period}  generate PPTX deck
+```
+
+## Deployment with Docker Compose
+
+The project includes a simple Compose setup for running the API with Postgres and Nginx.
+Make sure Docker and Docker Compose are installed, then:
+
+```bash
+# clone repository and change into directory
+# cp .env.example .env  # adjust DATABASE_URL if needed
+# cp frontend/.env.example frontend/.env  # configure API URL
+
+docker compose build
+# obtain certificates (replace domain and email)
+docker compose run --rm certbot
+# start everything in the background
+docker compose up -d db app nginx
+```
+
+Nginx will forward traffic to the FastAPI app on port 80/443 using the certificates
+managed by Certbot. Edit `nginx/default.conf` to set your real domain.
