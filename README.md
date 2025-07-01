@@ -120,5 +120,5 @@ docker compose run --rm certbot
 docker compose up -d db app nginx
 ```
 
-Nginx will forward traffic to the FastAPI app on port 80/443 using the certificates
+Nginx will forward traffic to the FastAPI app on port 8080/443 using the certificates
 managed by Certbot. Edit `nginx/default.conf` to set your real domain.
