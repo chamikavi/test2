@@ -62,6 +62,8 @@ This will start the FastAPI server at `http://localhost:8000`.
 
 ## Frontend development
 
+This project requires **Node.js 18** or newer.
+
 Install Node dependencies:
 
 ```bash
