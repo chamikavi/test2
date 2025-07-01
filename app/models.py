@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Float, Text
+from sqlalchemy import Column, Integer, String, ForeignKey, Float, Text, UniqueConstraint
 from sqlalchemy.orm import relationship
 from .database import Base
 
@@ -22,6 +22,7 @@ class User(Base):
 
 class Period(Base):
     __tablename__ = "periods"
+    __table_args__ = (UniqueConstraint("month", "year"),)
     id = Column(Integer, primary_key=True, index=True)
     month = Column(Integer)
     year = Column(Integer)
@@ -30,7 +31,7 @@ class Period(Base):
 class KPI(Base):
     __tablename__ = "kpis"
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String)
+    name = Column(String, unique=True)
 
 class Update(Base):
     __tablename__ = "updates"
