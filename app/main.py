@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, BackgroundTasks
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
@@ -9,6 +9,7 @@ from pptx import Presentation
 from pptx.util import Inches
 import matplotlib.pyplot as plt
 import tempfile
+import os
 
 security = HTTPBasic()
 app = FastAPI(title="360 Performance Hub API")
@@ -141,7 +142,7 @@ def list_files(outlet_id: int, period_id: int, db: Session = Depends(get_db), cu
 
 
 @app.get("/deck/{outlet_id}/{period_id}")
-def generate_deck(outlet_id: int, period_id: int, db: Session = Depends(get_db), current: models.User = Depends(get_current_user)):
+def generate_deck(outlet_id: int, period_id: int, background_tasks: BackgroundTasks, db: Session = Depends(get_db), current: models.User = Depends(get_current_user)):
     period = db.query(models.Period).filter(models.Period.id == period_id).first()
     if not period:
         raise HTTPException(status_code=404, detail="Period not found")
@@ -173,5 +174,7 @@ def generate_deck(outlet_id: int, period_id: int, db: Session = Depends(get_db),
 
     tmp_pptx = tempfile.NamedTemporaryFile(delete=False, suffix=".pptx")
     prs.save(tmp_pptx.name)
+    background_tasks.add_task(os.remove, tmp_pptx.name)
+    background_tasks.add_task(os.remove, tmp_chart.name)
 
     return FileResponse(tmp_pptx.name, filename=f"deck_{outlet_id}_{period.year}-{period.month:02d}.pptx")
