@@ -1,0 +1,46 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: perfhub
+      POSTGRES_PASSWORD: perfhub
+      POSTGRES_DB: perfhub
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  app:
+    build: .
+    environment:
+      DATABASE_URL: postgresql+psycopg2://perfhub:perfhub@db/perfhub
+    depends_on:
+      - db
+
+  nginx:
+    image: nginx:alpine
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - certbot-etc:/etc/letsencrypt
+      - certbot-www:/var/www/certbot
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - app
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - certbot-etc:/etc/letsencrypt
+      - certbot-www:/var/www/certbot
+    entrypoint: ''
+    command: >
+      certonly --webroot --webroot-path=/var/www/certbot \
+      --email you@example.com --agree-tos --no-eff-email \
+      -d example.com
+
+volumes:
+  db_data:
+  certbot-etc:
+  certbot-www:
