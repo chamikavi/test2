@@ -62,6 +62,8 @@ This will start the FastAPI server at `http://localhost:8000`.
 
 ## Frontend development
 
+This project requires **Node.js 18** or newer.
+
 Install Node dependencies:
 
 ```bash
@@ -84,7 +86,7 @@ The React app will be available at `http://localhost:5173` by default.
 The backend exposes a small set of CRUD endpoints secured with HTTP Basic auth:
 
 ```
-POST /users/                  create a new user
+POST /users/                  create a new user (admin role required)
 GET  /outlets/                list outlets
 POST /outlets/                create outlet
 GET  /periods/                list reporting periods
