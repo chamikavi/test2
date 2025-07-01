@@ -31,7 +31,13 @@ def get_current_user(credentials: HTTPBasicCredentials = Depends(security), db: 
     return user
 
 @app.post("/users/", response_model=schemas.User)
-def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+def create_user(
+    user: schemas.UserCreate,
+    db: Session = Depends(get_db),
+    current: models.User = Depends(get_current_user),
+):
+    if current.role != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
     hashed_pw = bcrypt.hash(user.password)
     db_user = models.User(username=user.username, password=hashed_pw, role=user.role)
     db.add(db_user)
