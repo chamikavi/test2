@@ -1,23 +1,23 @@
-[project]
+
+[tool.poetry]
 name = "360-performance-hub"
 version = "0.1.0"
 description = ""
-authors = [
-    {name = "Codex",email = "codex@openai.com"}
-]
+authors = ["Codex <codex@openai.com>"]
 readme = "README.md"
-requires-python = ">=3.12"
-dependencies = [
-    "fastapi (>=0.115.14,<0.116.0)",
-    "uvicorn[standard] (>=0.35.0,<0.36.0)",
-    "sqlalchemy (>=2.0.41,<3.0.0)",
-    "psycopg2-binary (>=2.9.10,<3.0.0)",
-    "python-multipart (>=0.0.20,<0.0.21)",
-    "python-dotenv (>=1.1.1,<2.0.0)",
-    "passlib[bcrypt] (>=1.7.4,<2.0.0)",
-    "python-pptx (>=1.0.2,<2.0.0)",
-    "matplotlib (>=3.10.3,<4.0.0)"
-]
+packages = [{include = "app"}]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = ">=0.115.14,<0.116.0"
+uvicorn = {version = ">=0.35.0,<0.36.0", extras = ["standard"]}
+sqlalchemy = ">=2.0.41,<3.0.0"
+psycopg2-binary = ">=2.9.10,<3.0.0"
+python-multipart = ">=0.0.20,<0.0.21"
+python-dotenv = ">=1.1.1,<2.0.0"
+passlib = {version = ">=1.7.4,<2.0.0", extras = ["bcrypt"]}
+python-pptx = ">=1.0.2,<2.0.0"
+matplotlib = ">=3.10.3,<4.0.0"
 
 
 [build-system]
