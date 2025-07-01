@@ -1,7 +1,9 @@
 
+from fastapi import FastAPI, Depends, HTTPException, BackgroundTasks
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 from .database import SessionLocal, engine, Base
 from . import models, schemas
 from passlib.hash import bcrypt
