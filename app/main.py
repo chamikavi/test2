@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException, BackgroundTasks
+
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
@@ -41,7 +41,11 @@ def create_user(
     hashed_pw = bcrypt.hash(user.password)
     db_user = models.User(username=user.username, password=hashed_pw, role=user.role)
     db.add(db_user)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Username already exists")
     db.refresh(db_user)
     return db_user
 
@@ -53,7 +57,11 @@ def list_outlets(db: Session = Depends(get_db), current: models.User = Depends(g
 def create_outlet(outlet: schemas.OutletCreate, db: Session = Depends(get_db), current: models.User = Depends(get_current_user)):
     db_outlet = models.Outlet(name=outlet.name, manager_id=current.id)
     db.add(db_outlet)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Outlet already exists")
     db.refresh(db_outlet)
     return db_outlet
 
@@ -62,7 +70,11 @@ def create_outlet(outlet: schemas.OutletCreate, db: Session = Depends(get_db), c
 def create_period(period: schemas.PeriodCreate, db: Session = Depends(get_db), current: models.User = Depends(get_current_user)):
     db_period = models.Period(month=period.month, year=period.year)
     db.add(db_period)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Period already exists")
     db.refresh(db_period)
     return db_period
 
@@ -76,7 +88,11 @@ def list_periods(db: Session = Depends(get_db), current: models.User = Depends(g
 def create_kpi(kpi: schemas.KPICreate, db: Session = Depends(get_db), current: models.User = Depends(get_current_user)):
     db_kpi = models.KPI(name=kpi.name)
     db.add(db_kpi)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="KPI already exists")
     db.refresh(db_kpi)
     return db_kpi
 
